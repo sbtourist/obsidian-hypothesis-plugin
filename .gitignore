@@ -1,6 +1,7 @@
-# Intellij
+# IDE
 *.iml
 .idea
+.vscode
 
 # npm
 node_modules
@@ -8,6 +9,7 @@ package-lock.json
 
 # build
 main.js
+main.js.bak
 *.js.map
 
 # obsidian plugin files

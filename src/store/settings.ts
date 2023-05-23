@@ -16,6 +16,7 @@ type Settings = {
   isConnected: boolean;
   template: string;
   syncOnBoot: boolean;
+  overwriteOnUpdate: boolean;
   history: SyncHistory;
   dateTimeFormat: string;
   autoSyncInterval: number;
@@ -30,6 +31,7 @@ const DEFAULT_SETTINGS: Settings = {
   isConnected: false,
   template: defaultTemplate,
   syncOnBoot: false,
+  overwriteOnUpdate: false,
   autoSyncInterval: 0,
   dateTimeFormat: 'YYYY-MM-DD HH:mm:ss',
   history: {
@@ -130,6 +132,13 @@ const createSettingsStore = () => {
     });
   };
 
+  const setOverwriteOnUpdate = (value: boolean) => {
+    store.update((state) => {
+      state.overwriteOnUpdate = value;
+      return state;
+    });
+  };
+
   const incrementHistory = (delta: SyncHistory) => {
     store.update((state) => {
       state.history.totalArticles += delta.totalArticles;
@@ -185,6 +194,7 @@ const createSettingsStore = () => {
       setAutoSyncInterval,
       setTemplate,
       setSyncOnBoot,
+      setOverwriteOnUpdate,
       incrementHistory,
       setDateTimeFormat,
       setGroups,

@@ -44,6 +44,7 @@ export class SettingsTab extends PluginSettingTab {
     this.highlightsFolder();
     this.folderPath();
     this.syncOnBoot();
+    this.overwriteOnUpdate();
     this.dateFormat();
     this.template();
     this.manageGroups();
@@ -203,6 +204,21 @@ export class SettingsTab extends PluginSettingTab {
           .setValue(get(settingsStore).syncOnBoot)
           .onChange(async (value) => {
             await settingsStore.actions.setSyncOnBoot(value);
+          })
+      );
+  }
+
+  private overwriteOnUpdate(): void {
+    new Setting(this.containerEl)
+      .setName('Overwrite on Update')
+      .setDesc(
+        'Overwrite when new highlights are found'
+      )
+      .addToggle((toggle) =>
+        toggle
+          .setValue(get(settingsStore).overwriteOnUpdate)
+          .onChange(async (value) => {
+            await settingsStore.actions.setOverwriteOnUpdate(value);
           })
       );
   }

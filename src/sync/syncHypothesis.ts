@@ -28,25 +28,30 @@ export default class SyncHypothesis {
 
         syncSessionStore.actions.startSync();
 
-        //fetch groups
-        await this.syncGroup.startSync();
+        try {
+            //fetch groups
+            await this.syncGroup.startSync();
 
-        //fetch highlights
-        const responseBody: [] = (!uri) ? await apiManager.getHighlights(get(settingsStore).lastSyncDate) : await apiManager.getHighlightWithUri(uri);
-        const articles = await parseSyncResponse(responseBody);
+            //fetch highlights
+            const responseBody: [] = (!uri) ? await apiManager.getHighlights(get(settingsStore).lastSyncDate) : await apiManager.getHighlightsWithUri(uri);
+            const articles = await parseSyncResponse(responseBody);
 
-        syncSessionStore.actions.setJobs(articles);
+            syncSessionStore.actions.setJobs(articles);
 
-        if (articles.length > 0) {
-            await this.syncArticles(articles);
+            if (articles.length > 0) {
+                await this.syncArticles(articles);
+            }
+
+            syncSessionStore.actions.completeSync({
+                newArticlesCount: this.syncState.newArticlesSynced,
+                newHighlightsCount: this.syncState.newHighlightsSynced,
+                updatedArticlesCount: 0,
+                updatedHighlightsCount: 0,
+            });
         }
-
-        syncSessionStore.actions.completeSync({
-            newArticlesCount: this.syncState.newArticlesSynced,
-            newHighlightsCount: this.syncState.newHighlightsSynced,
-            updatedArticlesCount: 0,
-            updatedHighlightsCount: 0,
-        });
+        catch (e) {
+            syncSessionStore.actions.errorSync(e.message);
+        }
     }
 
     private async syncArticles(articles: Article[]): Promise<void> {
@@ -67,13 +72,8 @@ export default class SyncHypothesis {
     }
 
     private async syncArticle(article: Article): Promise<void> {
-
-        const createdNewArticle = await this.fileManager.saveArticle(article);
-
-        if (createdNewArticle) {
-            this.syncState.newArticlesSynced += 1;
-        }
+        await this.fileManager.saveArticle(article);
+        this.syncState.newArticlesSynced += 1;
         this.syncState.newHighlightsSynced += article.highlights.length;
-
     }
 }

@@ -34,9 +34,10 @@ export default class FileManager {
 
   // Save an article as markdown file, replacing its existing file if present
   public async saveArticle(article: Article): Promise<boolean> {
+    const shouldOverwrite = await get(settingsStore).overwriteOnUpdate;
     const existingFile = await this.getArticleFile(article);
 
-    if (existingFile) {
+    if (existingFile && !shouldOverwrite) {
       console.debug(`Updating ${existingFile.path}`);
 
       const newMarkdownContent = this.renderer.render(article, false);
@@ -46,6 +47,11 @@ export default class FileManager {
       await this.vault.modify(existingFile, fileContent);
       return false;
     } else {
+      if (existingFile) {
+        console.debug(`Trashing ${existingFile.path}`);
+        await this.vault.trash(existingFile, true);
+      }
+
       const newFilePath = await this.getNewArticleFilePath(article);
       console.debug(`Creating ${newFilePath}`);
 
@@ -53,7 +59,7 @@ export default class FileManager {
       const fileContent = addFrontMatter(markdownContent, article);
 
       await this.vault.create(newFilePath, fileContent);
-      return true;
+      return !existingFile;
     }
   }
 
