@@ -1,6 +1,6 @@
 {
   "name": "obsidian-hypothesis-plugin",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "description": "Sync your Hypothesis highlights",
   "main": "src/main.ts",
   "repository": {
@@ -15,6 +15,7 @@
   },
   "keywords": [],
   "author": "weichenw",
+  "contributors": [{"name": "sbtourist"}],
   "license": "MIT",
   "dependencies": {
     "axios": "^0.26.0",
