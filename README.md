@@ -24,6 +24,7 @@ Use Hypothesis icon on the side icon ribbon or command to trigger manual sync.
 - `Highlights folder`: Specify the folder location for your Hypothesis articles
 - `Use domain folders`: Group generated files into folders based on the domain of the annotated URL
 - `Sync on startup`: Automatically sync highlights when open Obsidian
+- `Overwrite on Update`: Overwrite the whole doc when new annotations are found, to avoid duplicate annotations
 - `Highlights template`: Nunjuck template for rendering your highlights
 - `Groups`: Add/remove group to be synced
 - `Reset sync`: Wipe your sync history. Does not delete any previously synced highlights from your vault
@@ -37,15 +38,18 @@ Use Hypothesis icon on the side icon ribbon or command to trigger manual sync.
 
 ## Limitations & caveats
 
-- Limit to 1000 highlights on initial sync for performance. Subsequent sync for deltas are capped at 200 as pagination of result sets does not work in conjunction with API search_after parameter.
-- Only tested with Obsidian Mac OSX and Windows 10.
-- Does not suport annotations on PDFs.
+- There is a limit of 1000 highlights per sync for performance reasons, if the limit is hit a message will be displayed and another manual sync will have to be issued: the new sync will start from the last synced update.
+- Does not suport annotations on PDFs with "urn:x-pdf" URIs.
 
 ## Acknowledgement
+
+Original author: https://github.com/weichenw
 
 This project is inspired by Hady Ozman's [Obsidian Kindle Plugin](https://github.com/hadynz/obsidian-kindle-plugin).
 
 ## Do you find this plugin useful?
+
+Buy the original author a coffee!
 
 <a href="https://www.buymeacoffee.com/fatwombat"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=fatwombat&button_colour=BD5FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"></a>
 
