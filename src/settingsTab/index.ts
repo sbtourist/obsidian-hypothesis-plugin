@@ -52,8 +52,9 @@ export class SettingsTab extends PluginSettingTab {
   }
 
   private disconnect(): void {
+    const lastSyncedAnnotation = get(settingsStore).lastSyncedAnnotation || "unknown"; 
     const syncMessage = get(settingsStore).lastSyncDate
-      ? `Last sync ${moment(get(settingsStore).lastSyncDate).fromNow()}`
+      ? `Last sync ${moment(get(settingsStore).lastSyncDate).fromNow()} with last synced annotation: ${lastSyncedAnnotation}`
       : 'Sync has never run';
 
     const descFragment = document.createRange().createContextualFragment(`

@@ -39,28 +39,35 @@ export default class ApiManager {
       const newestTimestamp = lastSyncDate && moment.utc(lastSyncDate).toDate();
       const newestTimestampISO = newestTimestamp && newestTimestamp.toISOString();
 
+      let annotations = [];
       if (!shouldOverwrite) {
         console.log(`Updating new annotations since last sync date ${newestTimestampISO}`);
-        return this.doGetUpdatedHighlights(newestTimestamp, limit);
+        annotations = await this.doGetUpdatedHighlights(newestTimestamp, limit);
       }
-      if (shouldOverwrite && !newestTimestamp) {
+      else if (shouldOverwrite && !newestTimestamp) {
         console.log("Overwriting all annotations");
-        return this.doGetUpdatedHighlights(null);
+        annotations = await this.doGetUpdatedHighlights(null);
       }
       else {
         const updatedUris = await this.doGetUpdatedUris(newestTimestamp, limit);
         console.log(`Overwriting all annotations from ${updatedUris.size} updated URIs since last sync date ${newestTimestampISO}`);
 
-        let annotations = [];
         const promises = [];
         updatedUris.forEach((v, k, r) => promises.push(this.getHighlightsWithUri(v)));
         for (let index = 0; index < promises.length; index++) {
           const newAnnotations = await promises[index];
           annotations = [ ...annotations, ...newAnnotations ];
         }
-
-        return annotations;
       }
+
+      if (annotations.length == limit) {
+        new Notice('Reached annotations limit, please manually sync again.')
+      }
+      if (annotations.length > 0) {
+        settingsStore.actions.setLastSyncedAnnotation(new Date(annotations[annotations.length - 1].updated))
+      }
+
+      return annotations;
     } catch (e) {
       new Notice('Failed to fetch Hypothes.is annotations. Please check your API token and try again.')
       console.error(e);

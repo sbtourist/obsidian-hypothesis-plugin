@@ -21,8 +21,8 @@ export default class SyncHypothesis {
     async startSync(uri?: string) {
         this.syncState = { newArticlesSynced: 0, newHighlightsSynced: 0 };
 
-        const token = await get(settingsStore).token;
-        const userid = await get(settingsStore).user;
+        const token = get(settingsStore).token;
+        const userid = get(settingsStore).user;
 
         const apiManager = new ApiManager(token, userid);
 
@@ -33,8 +33,9 @@ export default class SyncHypothesis {
             await this.syncGroup.startSync();
 
             //fetch highlights
-            const responseBody: [] = (!uri) ? await apiManager.getHighlights(get(settingsStore).lastSyncDate) : await apiManager.getHighlightsWithUri(uri);
-            const articles = await parseSyncResponse(responseBody);
+            const searchAfter = get(settingsStore).lastSyncedAnnotation || get(settingsStore).lastSyncDate
+            const responseBody: [] = (!uri) ? await apiManager.getHighlights(searchAfter) : await apiManager.getHighlightsWithUri(uri);
+            const articles = parseSyncResponse(responseBody);
 
             syncSessionStore.actions.setJobs(articles);
 

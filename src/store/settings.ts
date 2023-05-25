@@ -13,6 +13,7 @@ type Settings = {
   user: string
   highlightsFolder: string;
   lastSyncDate?: Date;
+  lastSyncedAnnotation?: Date;
   isConnected: boolean;
   template: string;
   syncOnBoot: boolean;
@@ -54,6 +55,7 @@ const createSettingsStore = () => {
     const settings: Settings = {
       ...data,
       lastSyncDate: data.lastSyncDate ? new Date(data.lastSyncDate) : undefined,
+      lastSyncedAnnotation: data.lastSyncedAnnotation ? new Date(data.lastSyncedAnnotation) : undefined,
     };
 
     store.set(settings);
@@ -69,6 +71,9 @@ const createSettingsStore = () => {
         ...settings,
         lastSyncDate: settings.lastSyncDate
           ? settings.lastSyncDate.toJSON()
+          : undefined,
+          lastSyncedAnnotation: settings.lastSyncedAnnotation
+          ? settings.lastSyncedAnnotation.toJSON()
           : undefined,
       };
 
@@ -114,6 +119,13 @@ const createSettingsStore = () => {
   const setSyncDateToNow = () => {
     store.update((state) => {
       state.lastSyncDate = new Date();
+      return state;
+    });
+  };
+
+  const setLastSyncedAnnotation = (value: Date) => {
+    store.update((state) => {
+      state.lastSyncedAnnotation = value;
       return state;
     });
   };
@@ -189,6 +201,7 @@ const createSettingsStore = () => {
       setHighlightsFolder,
       resetSyncHistory,
       setSyncDateToNow,
+      setLastSyncedAnnotation,
       connect,
       disconnect,
       setAutoSyncInterval,
