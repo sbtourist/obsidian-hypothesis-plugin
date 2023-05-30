@@ -112,6 +112,7 @@ const createSettingsStore = () => {
       state.history.totalArticles = 0;
       state.history.totalHighlights = 0;
       state.lastSyncDate = undefined;
+      state.lastSyncedAnnotation = undefined;
       return state;
     });
   };
