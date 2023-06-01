@@ -45,6 +45,7 @@ export class SettingsTab extends PluginSettingTab {
     this.folderPath();
     this.syncOnBoot();
     this.overwriteOnUpdate();
+    this.enableContextualTags();
     this.dateFormat();
     this.template();
     this.manageGroups();
@@ -220,6 +221,19 @@ export class SettingsTab extends PluginSettingTab {
           .setValue(get(settingsStore).overwriteOnUpdate)
           .onChange(async (value) => {
             await settingsStore.actions.setOverwriteOnUpdate(value);
+          })
+      );
+  }
+
+  private enableContextualTags(): void {
+    new Setting(this.containerEl)
+      .setName('Contextual Tags')
+      .setDesc('Enable tag-based navigation across annotations')
+      .addToggle((toggle) =>
+        toggle
+          .setValue(get(settingsStore).enableContextualTags)
+          .onChange(async (value) => {
+            await settingsStore.actions.setEnableContextualTags(value);
           })
       );
   }

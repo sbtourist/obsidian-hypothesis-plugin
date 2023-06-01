@@ -52,18 +52,25 @@ const parseHighlight = (annotationData, groupName: string, momentFormat: string)
             }
         }
 
-        return {
+        let result = {
             id: annotationData['id'],
             created: moment(annotationData['created']).format(momentFormat),
             updated: moment(annotationData['updated']).format(momentFormat),
             text: highlightText && cleanTextSelectorHighlight(highlightText),
             incontext: annotationData['links']['incontext'],
+            anchor: "",
             user: annotationData['user'],
             annotation: annotationData['text'],
             tags: annotationData['tags'],
             group: groupName,
             isReply,
         }
+
+        if (get(settingsStore).enableContextualTags) {
+            enableContextualTags(result);
+        }
+
+        return result;
     } catch (error) {
 
         console.log(`Error parsing annotation format: ${error}`, annotationData);
@@ -111,6 +118,21 @@ const parseSyncResponse = (data): Article[] => {
     }, {});
 
     return Object.values(articlesMap)
+}
+
+const enableContextualTags = (annotation) => {
+    const id = md5(annotation.incontext);
+    annotation.tags = annotation.tags && [...annotation.tags, id];
+
+    // The non-capturing group (?:[-a-zA-Z0-9@%_\+~#?&\/\/=]|[.:;](?=\w)|\((?:\S*|(?R))\)) deserves an explanation:
+    // - [-a-zA-Z0-9@%_\+~#?&\/\/=] matches allowed path characters
+    // - [.:;](?=\S) matches punctuation only if followed by a non-whitespace character, to avoid matching the end of a line/sentence.
+    // - (?:\(\S*?\)) matches balanced parenthesis
+    const urlRegex = /https\:\/\/hyp\.is(?:[-a-zA-Z0-9@%_\+~#?&\/\/=]|[.:;](?=\S)|(?:\(\S*?\)))*/g
+    annotation.annotation += "\n"
+    annotation.annotation = annotation.annotation.replaceAll(urlRegex, (match) => {
+        return match + " #" + md5(match);
+    });
 }
 
 export default parseSyncResponse;

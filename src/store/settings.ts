@@ -18,6 +18,7 @@ type Settings = {
   template: string;
   syncOnBoot: boolean;
   overwriteOnUpdate: boolean;
+  enableContextualTags: boolean;
   history: SyncHistory;
   dateTimeFormat: string;
   autoSyncInterval: number;
@@ -33,6 +34,7 @@ const DEFAULT_SETTINGS: Settings = {
   template: defaultTemplate,
   syncOnBoot: false,
   overwriteOnUpdate: false,
+  enableContextualTags: false,
   autoSyncInterval: 0,
   dateTimeFormat: 'YYYY-MM-DD HH:mm:ss',
   history: {
@@ -152,6 +154,13 @@ const createSettingsStore = () => {
     });
   };
 
+  const setEnableContextualTags = (value: boolean) => {
+    store.update((state) => {
+      state.enableContextualTags = value;
+      return state;
+    });
+  };
+
   const incrementHistory = (delta: SyncHistory) => {
     store.update((state) => {
       state.history.totalArticles += delta.totalArticles;
@@ -209,6 +218,7 @@ const createSettingsStore = () => {
       setTemplate,
       setSyncOnBoot,
       setOverwriteOnUpdate,
+      setEnableContextualTags,
       incrementHistory,
       setDateTimeFormat,
       setGroups,
